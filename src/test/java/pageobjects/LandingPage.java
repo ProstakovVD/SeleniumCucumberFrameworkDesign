@@ -1,53 +1,72 @@
-package pageobjects;
+package pageObjects;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 
-import abstractComponents.AbstractComponent;
+import abstractComponents.GenericUtils;
 
-public class LandingPage extends AbstractComponent{
+public class LandingPage extends GenericUtils{
 
-	WebDriver driver;
-	//We need a constructor (first method that will be execute)
+	public WebDriver driver;
+	
 	public LandingPage(WebDriver driver){
 		
 		super(driver);
 		this.driver=driver;
-		PageFactory.initElements(driver, this);
 		
 	}
 	
-	@FindBy(xpath="//input[@type='email']") private WebElement userEmail;
+	private By searchField = By.className("search-keyword");
+	private By productCardName = By.xpath("//h4[@class='product-name']");
+	private By productCartAmountField = By.xpath("//div[@class='stepper-input']/input[@type='number']");
+	private By productCartAddButton = By.xpath("//div[@class='product-action']/button");
+	private By topDealsLink = By.linkText("Top Deals");
+	private By checkoutPageList = By.xpath("//img[@alt='Cart']");
+	private By checkoutPageLink = By.xpath("(//div[@class='action-block']/button)[1]");
 	
-	@FindBy(xpath="//input[@type='password']") private WebElement userPassword;
-	
-	@FindBy(xpath="//input[@id='login']") private WebElement loginBtn;
-	
-	@FindBy(css="[class*='flyInOut']") private WebElement errorMessage;
-	
-	public ProductCatalogue loginAplication(String email, String password) {
+	public void searchForAnElement(String shortName) {
 		
-		userEmail.sendKeys(email);
-		userPassword.sendKeys(password);
-		loginBtn.click();
-		ProductCatalogue productCatalogue = new ProductCatalogue(driver);
-		return productCatalogue;
+		driver.findElement(searchField).sendKeys(shortName);
 		
 	}
 	
-	public String getErrorMessage() {
+	public String getProductNameFromProductCard() {
 		
-		waitForWebElementToAppear(errorMessage);
-		errorMessage.getText();
-		return errorMessage.getText();
+		return driver.findElement(productCardName).getText();
 		
 	}
 	
-	public void goTo() {
+	public void switchToTopDealsPage() {
 		
-		driver.get("https://rahulshettyacademy.com/client");
+		driver.findElement(topDealsLink).click();
+		switchWindowToChild();
+
+	}
+	
+	public void changeAmountOfProduct(String number) {
+		
+		driver.findElement(productCartAmountField).clear();
+		driver.findElement(productCartAmountField).sendKeys(number);
+		
+	}
+	
+	public void addToCart() {
+		
+		driver.findElement(productCartAddButton).click();
+		
+	}
+	
+	public void switchToCheckoutPage() {
+		
+		waitForElementToAppear(checkoutPageList);
+		driver.findElement(checkoutPageList).click();
+		driver.findElement(checkoutPageLink).click();
+		
+	}
+	
+	public String getTitleLP() {
+		
+		return driver.getTitle();
 		
 	}
 	
